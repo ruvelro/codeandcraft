@@ -1,5 +1,22 @@
 # Done
 
+## TSK-036 - Harden first-run GitHub Pages enablement
+- Priority: High
+- Completed: 2026-04-09
+- Scope completed:
+  - updated the Pages deployment workflow so the repository can auto-enable GitHub Pages on the first deployment run
+  - documented the new first-run behavior and kept the manual Pages settings step as a fallback
+- Files modified:
+  - `.github/workflows/deploy-pages.yml`
+  - `docs/setup-and-ops.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - workflow configuration updated to pass `enablement: true` into `actions/configure-pages`
+- Remaining caution:
+  - if GitHub still reports the Pages site as missing, set `Settings` -> `Pages` -> `Source` to `GitHub Actions` once and rerun the workflow
+
 ## TSK-035 - Audit GitHub Pages deployment readiness and publish runbook
 - Priority: High
 - Completed: 2026-04-09

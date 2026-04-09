@@ -60,6 +60,7 @@
 ### Workflow
 - Confirmed by code: `.github/workflows/deploy-pages.yml` builds the site and deploys `dist/` to GitHub Pages on push to `main` and on manual dispatch.
 - Confirmed by code: `vite.config.ts` uses `base: './'`, so the built asset URLs remain relative and work under the project Pages URL `https://ruvelro.github.io/codeandcraft/`.
+- Confirmed by code: `.github/workflows/deploy-pages.yml` now passes `enablement: true` to `actions/configure-pages`, so the first deployment can bootstrap the Pages site when the repository has not been enabled yet.
 
 ### Pages Setup
 1. Push the repository to GitHub.
@@ -100,6 +101,7 @@
 9. Push the first version:
    - `git push -u origin main`
 10. In GitHub, open `Settings` -> `Pages` and set `Source` to `GitHub Actions`.
+   - Reasonable inference: this step may no longer be required on repositories where the workflow can enable Pages automatically, but it remains the safest manual fallback if GitHub still reports the Pages site as missing.
 11. Open `Actions` and verify that `Deploy GitHub Pages` completes successfully.
 12. Validate the published URL:
    - `https://ruvelro.github.io/codeandcraft/`
