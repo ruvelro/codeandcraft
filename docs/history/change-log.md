@@ -7,6 +7,7 @@
 - Removed the unused legacy payload `public/data/catalog.generated.json` so the repository is leaner and less confusing before its first public push.
 - Hardened the GitHub Pages workflow for first-run repositories by enabling automatic Pages site bootstrap during `actions/configure-pages`.
 - Clarified the scheduled catalog workflow auth split so scraper API calls use `SCRAPER_GITHUB_TOKEN` and automated PR creation uses the built-in repository `GITHUB_TOKEN`.
+- Added a polished repository `README.md` with a live demo link, project overview, local commands, and automation summary.
 
 ## 2026-04-07
 - Bootstrapped persistent project documentation under `docs/` and added `AGENTS.md`.

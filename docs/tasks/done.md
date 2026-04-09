@@ -1,5 +1,20 @@
 # Done
 
+## TSK-038 - Add polished repository README
+- Priority: Medium
+- Completed: 2026-04-09
+- Scope completed:
+  - added a public-facing `README.md` for the repository
+  - linked the repository to the live GitHub Pages site
+  - documented the main local commands and the high-level data pipeline
+- Files modified:
+  - `README.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - reviewed README links and command references against current project docs and scripts
+
 ## TSK-037 - Clarify automated catalog auth flow
 - Priority: High
 - Completed: 2026-04-09
