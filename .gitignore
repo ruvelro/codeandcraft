@@ -1,0 +1,16 @@
+node_modules/
+dist/
+public/data/*.generated.json
+.env
+.env.*
+*.local
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+.python-version
+__pycache__/
+*.pyc

@@ -1,0 +1,69 @@
+name: Update Catalog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-catalog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check scraper token
+        shell: bash
+        env:
+          SCRAPER_GITHUB_TOKEN: ${{ secrets.SCRAPER_GITHUB_TOKEN }}
+        run: |
+          if [ -z "$SCRAPER_GITHUB_TOKEN" ]; then
+            echo "SCRAPER_GITHUB_TOKEN secret is missing. Skipping catalog update workflow."
+            exit 0
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Python dependencies
+        run: python -m pip install requests
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run scraper
+        env:
+          GITHUB_TOKEN: ${{ secrets.SCRAPER_GITHUB_TOKEN }}
+        run: python scrapper/github_scraper.py
+
+      - name: Rebuild catalog payloads
+        run: npm run build:data
+
+      - name: Run tests
+        run: npm test
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore: refresh catalog data'
+          title: 'chore: refresh catalog data'
+          body: |
+            ## Summary
+            - run the scraper to append newly discovered repositories
+            - validate payload generation from the canonical scraper CSV
+            - include the latest delta file and catalog CSV changes for review
+          branch: chore/refresh-catalog-data
+          delete-branch: true

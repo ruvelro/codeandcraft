@@ -1,0 +1,729 @@
+# Done
+
+## TSK-035 - Audit GitHub Pages deployment readiness and publish runbook
+- Priority: High
+- Completed: 2026-04-09
+- Scope completed:
+  - audited the repository for GitHub publication readiness and checked the existing Pages deployment workflow against the target URL `ruvelro.github.io/codeandcraft`
+  - documented the first publish flow and the repeatable release flow for future updates
+  - expanded `.gitignore` to cover common local secret files and generated artifacts
+  - removed the unused legacy generated payload `public/data/catalog.generated.json`
+- Files modified:
+  - `.gitignore`
+  - `docs/setup-and-ops.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+  - working-tree secret scan for common token/key patterns returned no live credential matches
+- Remaining caution:
+  - Git history could not be audited because the folder is not yet initialized as a Git repository locally
+  - once Git is initialized, the staged file list should still be reviewed before the first push
+
+## TSK-001 - Bootstrap catalog MVP and persistent project docs
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - created persistent repository documentation and task tracking
+  - added Vite + React + TypeScript frontend shell
+  - added CSV to JSON build pipeline
+  - implemented grouped sidebar, cards, name search, and minimum stars filter
+  - removed hardcoded GitHub token from scraper
+- Files modified:
+  - `AGENTS.md`
+  - `docs/**`
+  - `package.json`
+  - `tsconfig.json`
+  - `vite.config.ts`
+  - `index.html`
+  - `scripts/build-catalog-data.mjs`
+  - `src/**`
+  - `.gitignore`
+  - `github_scrapper.py`
+- Verification:
+  - `npm run build:data`
+  - `npm test`
+  - `npm run build`
+- Risks / follow-ups:
+  - evaluate payload splitting or virtualization if load time becomes noticeable
+  - improve category curation rules for noisy repositories
+  - add URL-synced filters
+
+## TSK-004 - Add URL-synced filters
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - added URL parsing for `q`, `minStars`, and `categories`
+  - rehydrated filters from the URL on initial load and browser history navigation
+  - mirrored current filters back into the URL without a page reload
+  - added tests for URL state parsing and serialization
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/features/catalog/catalog-types.ts`
+  - `src/features/catalog/catalog-url-state.ts`
+  - `src/features/catalog/use-catalog-filters.ts`
+  - `src/features/catalog/catalog-url-state.test.ts`
+  - `docs/file-map.md`
+  - `docs/functions-map.md`
+  - `docs/data-flow.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+- Risks / follow-ups:
+  - consider whether category ordering in the query string should preserve selection order instead of alphabetical stability
+
+## TSK-005 - Improve category curation rules
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - added a dedicated curation module for the build pipeline
+  - excluded five known noisy repositories and metadata-only `.github` repositories
+  - truncated oversized descriptions to keep cards and search input cleaner
+  - added automated tests for curation behavior
+- Files modified:
+  - `scripts/build-catalog-data.mjs`
+  - `scripts/catalog-curation.mjs`
+  - `scripts/catalog-curation.test.mjs`
+  - `docs/file-map.md`
+  - `docs/functions-map.md`
+  - `docs/architecture.md`
+  - `docs/features/data-ingestion.md`
+  - `docs/technical-debt.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build:data`
+  - `npm run build`
+- Measured impact:
+  - generated catalog size changed from `22,474` to `22,469` repositories
+- Risks / follow-ups:
+  - current exclusions are intentionally narrow and may need future manual additions based on real catalog review
+
+## TSK-006 - Evaluate payload splitting or virtualization
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - measured full payload size and parse cost
+  - compared the default `>= 10,000` stars subset against the full dataset
+  - implemented split payload generation and lazy loading of the full dataset
+  - documented the decision to prefer payload splitting before virtualization
+- Files modified:
+  - `.gitignore`
+  - `scripts/build-catalog-data.mjs`
+  - `src/app/App.tsx`
+  - `docs/architecture.md`
+  - `docs/file-map.md`
+  - `docs/data-flow.md`
+  - `docs/setup-and-ops.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+- Measurements:
+  - full payload: `13,268,808` bytes raw, `2,698,623` bytes gzip
+  - default payload: `1,490,461` bytes raw, `305,855` bytes gzip
+  - previous full-payload parse measurement: about `33.51 ms`
+  - current default-payload parse measurement: about `3.10 ms`
+- Decision:
+  - implement payload splitting now
+  - defer virtualization until real browser rendering shows a problem in the default view
+
+## TSK-007 - Refine visual design and test readiness
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - made repository ordering explicitly descending by stars after filtering
+  - refined the dark layout, sidebar density, card styling, and header chrome toward the provided reference
+  - added reset control and clearer testing-oriented UI metadata
+  - documented how to run, test, and measure payload, lazy loading, and rendering cost
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/CatalogHeader.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/components/RepoCard.tsx`
+  - `src/components/RepoGrid.tsx`
+  - `src/components/SearchBar.tsx`
+  - `src/components/StarsFilter.tsx`
+  - `src/features/catalog/catalog-selectors.ts`
+  - `src/features/catalog/catalog-selectors.test.ts`
+  - `src/styles/index.css`
+  - `docs/architecture.md`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/repository-cards.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+- Risks / follow-ups:
+  - visual alignment with the screenshot is much closer, but not yet pixel-identical
+  - final design judgment still requires manual browser review against the reference image
+
+## TSK-008 - Convert category filters into category navigation and incremental grid loading
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - replaced multi-select category filters with single active category navigation
+  - added category icon tokens and a dedicated `All categories` entry
+  - preserved backward compatibility for legacy `categories=` URLs by mapping them to the first valid category
+  - added incremental grid loading with `IntersectionObserver`
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/CatalogHeader.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/components/RepoGrid.tsx`
+  - `src/features/catalog/catalog-constants.ts`
+  - `src/features/catalog/catalog-types.ts`
+  - `src/features/catalog/catalog-selectors.ts`
+  - `src/features/catalog/catalog-selectors.test.ts`
+  - `src/features/catalog/catalog-url-state.ts`
+  - `src/features/catalog/catalog-url-state.test.ts`
+  - `src/features/catalog/use-catalog-filters.ts`
+  - `src/styles/index.css`
+  - `docs/architecture.md`
+  - `docs/file-map.md`
+  - `docs/functions-map.md`
+  - `docs/data-flow.md`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/repository-cards.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+- Risks / follow-ups:
+  - current category icons are lightweight text tokens, not final bespoke icons
+  - if low-star browsing still feels heavy, the next step is true virtualization rather than larger batch sizes
+
+## TSK-009 - Remove redundant GUI chrome
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - removed the explanatory header block from the sidebar
+  - removed the extra top status bar from the main panel
+  - removed the badge/tabs row above the main title
+  - kept reset controls inside the toolbar where they take less visual space
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/CatalogHeader.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-010 - Simplify hero copy and replace category tokens with real icons
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - removed the trailing sentence from the hero subtitle
+  - removed the stats row below the title
+  - replaced sidebar text tokens with inline SVG icons
+- Files modified:
+  - `src/components/CategoryIcon.tsx`
+  - `src/components/CatalogHeader.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/features/catalog/catalog-constants.ts`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-011 - Refine iconography and layout proportions
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - refined category SVG icons toward a more consistent line style
+  - replaced the `GH` token in repository cards with an inline GitHub SVG mark
+  - tightened sidebar, toolbar, card, and header spacing and proportions
+- Files modified:
+  - `src/components/CategoryIcon.tsx`
+  - `src/components/RepoCard.tsx`
+  - `src/styles/index.css`
+  - `docs/features/category-navigation.md`
+  - `docs/features/repository-cards.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-012 - Fine tune visual alignment with reference
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - refined the SVG icon set for more consistent visual weight
+  - replaced the repository `GH` token with an inline GitHub SVG mark in the accent color
+  - tightened sidebar density, hero spacing, toolbar proportions, and card spacing
+- Files modified:
+  - `src/components/CategoryIcon.tsx`
+  - `src/components/RepoCard.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/repository-cards.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-013 - Translate remaining Spanish UI copy to English
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - translated the remaining Spanish UI copy in loading, empty, search, filter, and grid metadata states
+  - aligned visible interface language with the predominantly English catalog content
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/RepoGrid.tsx`
+  - `src/components/SearchBar.tsx`
+  - `src/components/StarsFilter.tsx`
+  - `docs/features/catalog.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+  - content search across `src/` found no remaining Spanish UI copy
+
+## TSK-014 - Fix stars dropdown theme
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - forced the minimum stars native dropdown popup to use the dark theme colors
+- Files modified:
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-015 - Expand catalog filtering system
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - added category group, keyword, owner, description-only, sort, top-N, and search-scope filters
+  - extended the generated dataset with keyword and normalized text metadata for filtering
+  - persisted the expanded filter state in the URL
+  - kept the filter UI compact in a two-row control layout
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/features/catalog/catalog-types.ts`
+  - `src/features/catalog/catalog-constants.ts`
+  - `src/features/catalog/catalog-selectors.ts`
+  - `src/features/catalog/catalog-selectors.test.ts`
+  - `src/features/catalog/catalog-url-state.ts`
+  - `src/features/catalog/catalog-url-state.test.ts`
+  - `src/features/catalog/use-catalog-filters.ts`
+  - `src/styles/index.css`
+  - `scripts/build-catalog-data.mjs`
+  - `docs/features/catalog.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/file-map.md`
+  - `docs/functions-map.md`
+  - `docs/data-flow.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-016 - Refine advanced filters UX
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - moved less-used controls into a collapsible advanced filters panel
+  - kept only search, minimum stars, and core actions in the primary toolbar
+  - added compact chips for active advanced filters
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/features/search-and-filtering.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-017 - Polish advanced filters panel behavior
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - added a smooth open/close transition for the advanced filters panel
+  - replaced the oversized description-only checkbox row with a compact switch-style control
+  - fixed responsive wrapping in the filters area for tablet and mobile widths
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/features/search-and-filtering.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-018 - Reduce visual weight of description switch
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - removed the extra boxed background and border from the description-only switch so it sits more naturally inside the advanced filters panel
+- Files modified:
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm run build`
+
+## TSK-019 - Vertically center description switch content
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - vertically centered the description-only switch track and label inside the advanced filters grid
+- Files modified:
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm run build`
+
+## TSK-020 - Align description switch row with labeled controls
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - aligned the description-only switch by giving it the same label-row structure as adjacent filter controls
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm run build`
+
+## TSK-021 - Run accessibility and responsive hardening pass
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - added visible keyboard focus treatment across interactive controls
+  - added `aria-expanded`, `aria-controls`, `aria-pressed`, and region labeling where appropriate
+  - tightened responsive behavior so the card grid collapses to one column on narrower widths
+  - moved pending work from informal docs into tracked backlog tasks
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/styles/index.css`
+  - `docs/tasks/backlog.md`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/testing.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+- Remaining follow-up:
+  - browser/device QA is still needed to confirm accessibility and responsive behavior outside local build validation
+
+## TSK-022 - Measure browser performance on lower-end devices
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - measured current default and full payload sizes
+  - measured parse and filter costs with representative scenarios using local Node-based proxy timings
+  - documented the decision to defer true virtualization until real browser/device traces exist
+- Files modified:
+  - `docs/architecture.md`
+  - `docs/technical-debt.md`
+  - `docs/testing.md`
+  - `docs/decisions/architecture-decisions.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - measurement commands executed successfully against current generated payloads
+- Findings summary:
+  - default payload: about `365 KB gzip`
+  - full payload: about `3.22 MB gzip`
+  - default parse: about `4.30 ms`
+  - full parse: about `35.82 ms`
+  - common filter scenarios stayed under about `2 ms`
+- Remaining follow-up:
+  - browser traces on lower-end devices are still required before closing the virtualization question completely
+
+## TSK-023 - Review category curation quality
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - reviewed suspicious repository candidates and high-noise pattern buckets in the source CSV
+  - confirmed that current curation should remain narrow and explicit
+  - documented that broader notebook/book/resource heuristics would hide many legitimate repositories
+- Files modified:
+  - `docs/features/data-ingestion.md`
+  - `docs/technical-debt.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - dataset review commands executed successfully against `biblioteca_total.csv`
+- Decision:
+  - keep the current explicit denylist and `.github` metadata exclusion
+  - defer any broader curation until specific false positives are identified
+
+## TSK-024 - Define incremental data update workflow
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - documented the project's incremental acquisition workflow around `scrapper/new_repositories.csv`
+  - defined `scrapper/repositories_catalog.csv` as the only canonical input for frontend payload generation
+  - recorded the decision to keep full payload rebuilds instead of implementing partial JSON patching now
+- Files modified:
+  - `docs/setup-and-ops.md`
+  - `docs/roadmap.md`
+  - `docs/features/data-ingestion.md`
+  - `docs/decisions/architecture-decisions.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - decision is consistent with current scraper outputs and build pipeline
+
+## TSK-026 - Reorganize scraper assets and normalize scraper outputs to English
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - moved scraper code and scraper-managed source files into `scrapper/`
+  - renamed scraper-managed files to English names
+  - updated the scraper to use environment-based token guidance and English CSV headers
+  - updated the frontend build pipeline and documentation to use the new canonical paths and column names
+- Files modified:
+  - `scrapper/github_scraper.py`
+  - `scrapper/categories.json`
+  - `scrapper/repositories_catalog.csv`
+  - `scrapper/new_repositories.csv`
+  - `scripts/build-catalog-data.mjs`
+  - `scripts/catalog-curation.mjs`
+  - `AGENTS.md`
+  - `docs/project-overview.md`
+  - `docs/architecture.md`
+  - `docs/file-map.md`
+  - `docs/data-flow.md`
+  - `docs/integrations.md`
+  - `docs/setup-and-ops.md`
+  - `docs/technical-debt.md`
+  - `docs/features/data-ingestion.md`
+  - `docs/domain-glossary.md`
+  - `docs/roadmap.md`
+  - `docs/decisions/architecture-decisions.md`
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-025 - Rotate any previously exposed GitHub token
+- Priority: High
+- Completed: 2026-04-07
+- Scope completed:
+  - closed the follow-up based on user confirmation that the previously exposed token no longer exists and no repository-side rotation action remains
+- Files modified:
+  - `docs/technical-debt.md`
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/done.md`
+- Verification:
+  - closed based on explicit user confirmation
+
+## TSK-027 - Automate scraper-to-build update workflow
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - added a GitHub Actions workflow that runs the scraper, validates data generation, and opens a pull request
+  - added a GitHub Pages deployment workflow
+  - updated the app to use `import.meta.env.BASE_URL` for data fetches and set Vite `base` to `./`
+  - documented repository secret setup, workflow execution, and Pages publishing steps
+- Files modified:
+  - `.github/workflows/update-catalog.yml`
+  - `.github/workflows/deploy-pages.yml`
+  - `src/app/App.tsx`
+  - `vite.config.ts`
+  - `src/vite-env.d.ts`
+  - `docs/setup-and-ops.md`
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+  - `docs/technical-debt.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-028 - Add repository promotion links to the UI
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - added a top-right fork ribbon linking to the GitHub repository
+  - added a `Buy me a coffee` support link
+  - kept both elements responsive and compatible with the existing dark UI
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-029 - Polish repository promotion links
+- Priority: Medium
+- Completed: 2026-04-07
+- Scope completed:
+  - widened and repositioned the fork ribbon so its text is fully visible
+  - moved the support button to the top-right cluster near the ribbon
+  - added a coffee SVG icon to the support button
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm run build`
+
+## TSK-030 - Add responsive top bar and collapsible navigation chrome
+- Priority: High
+- Completed: 2026-04-08
+- Scope completed:
+  - replaced the floating fork ribbon with a persistent top bar containing the sidebar toggle, `@ruvelro`, an active `Repos` tab, and support/profile links
+  - added full category-sidebar collapse plus a mobile-only filters visibility toggle so navigation chrome no longer consumes fixed space on narrow screens
+  - darkened the repository card footer strip so stars and source actions stand out from the card body
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/FilterSidebar.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-031 - Tighten mobile defaults and repo card proportions
+- Priority: High
+- Completed: 2026-04-08
+- Scope completed:
+  - made compact and mobile layouts start with both categories and filters hidden by default
+  - widened repository cards and reduced the vertical gap between the GitHub mark and repository title area
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-032 - Normalize repository card content alignment
+- Priority: High
+- Completed: 2026-04-08
+- Scope completed:
+  - fixed the title and owner block height so repository names begin from a consistent vertical position across cards
+  - fixed the description area height and kept three-line truncation so footer alignment stays stable regardless of shorter descriptions
+- Files modified:
+  - `src/components/RepoCard.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-033 - Equalize card height and run pre-launch review
+- Priority: High
+- Completed: 2026-04-08
+- Scope completed:
+  - made repository cards stretch to equal height within each grid row
+  - hardened the collapsed sidebar so hidden navigation is no longer interactive
+  - performed a focused pre-launch review and recorded remaining launch risks
+- Files modified:
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
+
+## TSK-034 - Apply pre-launch compatibility and mobile overlay hardening
+- Priority: High
+- Completed: 2026-04-08
+- Scope completed:
+  - added a `matchMedia` listener fallback for browsers without `MediaQueryList.addEventListener`
+  - normalized visible result counts to English numeric formatting
+  - turned the compact sidebar into a dismissible overlay drawer with backdrop, escape-close support, and body scroll locking
+- Files modified:
+  - `src/app/App.tsx`
+  - `src/components/RepoGrid.tsx`
+  - `src/styles/index.css`
+  - `docs/features/catalog.md`
+  - `docs/features/category-navigation.md`
+  - `docs/features/search-and-filtering.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `npm run build`
