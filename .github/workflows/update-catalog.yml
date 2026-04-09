@@ -58,6 +58,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ github.token }}
           commit-message: 'chore: refresh catalog data'
           title: 'chore: refresh catalog data'
           body: |

@@ -41,12 +41,24 @@
 ### Automatic Catalog Refresh PRs
 - Confirmed by code: `.github/workflows/update-catalog.yml` can run manually and on a weekly schedule.
 - Confirmed by code: it runs the scraper, validates payload generation, runs tests, and opens a pull request with scraper-managed file changes.
+- Confirmed by code: the workflow uses `SCRAPER_GITHUB_TOKEN` only for the scraper API requests and uses the repository `GITHUB_TOKEN` for the automated branch/commit/pull request step.
 
 ### Required Repository Secret
 1. Open the GitHub repository.
 2. Go to `Settings` -> `Secrets and variables` -> `Actions`.
 3. Create a new repository secret named `SCRAPER_GITHUB_TOKEN`.
 4. Paste the GitHub personal access token that should be used for scraping.
+
+### Required Repository Actions Settings
+1. Open the GitHub repository.
+2. Go to `Settings` -> `Actions` -> `General`.
+3. Under `Workflow permissions`, select `Read and write permissions`.
+4. Enable `Allow GitHub Actions to create and approve pull requests`.
+
+### Authentication Split
+- Confirmed by code: the scraper step exports `GITHUB_TOKEN` from `secrets.SCRAPER_GITHUB_TOKEN` only inside the scraper process.
+- Confirmed by code: the pull-request step passes `token: ${{ github.token }}` to `peter-evans/create-pull-request`, so no second personal access token is required for automation.
+- Recommendation: keep the PAT limited to scraper/API usage and rely on the built-in Actions token for repository writes.
 
 ### How To Run The Refresh Workflow Manually
 1. Open the repository on GitHub.

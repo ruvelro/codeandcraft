@@ -1,5 +1,25 @@
 # Done
 
+## TSK-037 - Clarify automated catalog auth flow
+- Priority: High
+- Completed: 2026-04-09
+- Scope completed:
+  - made the scheduled catalog workflow explicitly use the repository `GITHUB_TOKEN` for automated pull requests
+  - kept `SCRAPER_GITHUB_TOKEN` scoped to scraper/API usage only
+  - documented the repository Actions settings required for PR automation
+- Files modified:
+  - `.github/workflows/update-catalog.yml`
+  - `docs/setup-and-ops.md`
+  - `docs/tasks/in-progress.md`
+  - `docs/tasks/done.md`
+  - `docs/history/change-log.md`
+- Verification:
+  - `npm test`
+  - `git diff --check`
+  - workflow review confirmed `contents: write`, `pull-requests: write`, scraper secret usage, and `token: ${{ github.token }}`
+- Remaining caution:
+  - the repository-level Actions settings still need to be enabled in GitHub UI if they are not already active
+
 ## TSK-036 - Harden first-run GitHub Pages enablement
 - Priority: High
 - Completed: 2026-04-09
